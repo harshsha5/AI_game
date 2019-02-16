@@ -5,9 +5,10 @@
 namespace mrsd
 {
 	void Controller::control(const mrsd::Game& g, float t)
-	{
+	{	if(p!=0)
+		{
 		//g->tick();
-		Player *player_pointer;
+		//Player *player_pointer;
 		Prediction pred;
 		//Projectile p;
 		float present_time = g.getGameTime();
@@ -16,24 +17,27 @@ namespace mrsd
 		//map<float, Projectile> projectile_time_mapping;
 		projectile_list = g.getProjectiles(); 
 		explosion_list = g.getExplosions();
-		for(std::list<Projectile>::iterator it = projectile_list.begin();it != projectile_list.end();)
+		prediction_vector.clear();
+		for(std::list<Projectile>::iterator it = projectile_list.begin();it != projectile_list.end();it++)
 		{
 	
 			pred = trackProjectile(*it,g);
+			//std::cout<<pred.t<<","<<pred.x<<"\n";
 			prediction_vector.push_back(pred);
 
 		}
 
 		determineSafeSpots(g);
 
-
+		pickSafeSpot(g);
+		}
 
 	}
 
-	void Controller::find_explosion_area(Game& g, float x)
+	void Controller::find_explosion_area(int w, float x,float explosionSize)
 	{
-		int w = g.getWidth();
-		for(int i = std::floor(x - g.explosionSize);i <= std::ceil(x + g.explosionSize);++i)
+		//int w = g.getWidth();
+		for(int i = std::floor(x - explosionSize);i <= std::ceil(x + explosionSize);++i)
 		{
 			if( i >= 0 && i <= w )
 				my_dangerZone[i]++;
@@ -60,7 +64,7 @@ namespace mrsd
 		Prediction pred;
 		//pred.t = -2*p.vy/g.getGravity();
 
-		float t1 = -1*p.y + pow(pow(p.vy,2) - (2*g.getGravity()*p.y),0.5);
+		float t1 = (-1*p.y + pow(pow(p.vy,2) - (2*g.getGravity()*p.y),0.5))/g.getGravity();
 		if(t1>0)
 		{	pred.t = t1;
 			pred.x = p.x + (p.vx*pred.t);
@@ -68,7 +72,7 @@ namespace mrsd
 		}
 		else
 		{
-			pred.t= -1*p.y + pow(pow(p.vy,2) + (2*g.getGravity()*p.y),0.5);
+			pred.t= (-1*p.y + pow(pow(p.vy,2) + (2*g.getGravity()*p.y),0.5))/g.getGravity();
 			pred.x = p.x + (p.vx*pred.t);
 			pred.t = pred.t + g.getGameTime();
 		}
@@ -79,22 +83,40 @@ namespace mrsd
 
 	void Controller::determineSafeSpots(const Game& g)
 	{	
-		int w = g.getWidth;
+		int w = g.getWidth();
+		float my_time_step = g.getTimeStep();
+		float my_explosion_size = g.explosionSize;
 		my_dangerZone = new int[w+1];
 		for(int i = 0; i < w+1; ++i) my_dangerZone[i] = 0;
 		for(int i=0;i<prediction_vector.size();i++)
 		{
-			if(prediction_vector[i].t == g.getGameTime())
+			//if(prediction_vector[i].t == g.getGameTime() + 5*my_time_step)
+			if(g.getGameTime() > prediction_vector[i].t - 10*my_time_step && g.getGameTime() < g.getGameTime() + 10*my_time_step)
 				{
-					find_explosion_area(g,prediction_vector[i].x);
+					find_explosion_area(w, prediction_vector[i].x,my_explosion_size);
 				}
 		}
+
+		for(int i=0;i<w+1;i++)
+		{
+			std::cout<<my_dangerZone[i]<<",";
+		}
+		std::cout<<"\n";
 
 	}
 
 	int Controller::pickSafeSpot(const Game& g)
 	{
-		
+		int length = g.getWidth();
+		for(int i=0;i<length;i++)
+		{
+			if(my_dangerZone[i]==0)
+			{
+				p->x = my_dangerZone[i];
+				break;
+			}
+		}
+
 		return 0;
 	}
 }
