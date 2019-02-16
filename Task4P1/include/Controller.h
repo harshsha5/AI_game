@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "Game.h"
 #include <map>
+#include <unordered_map>
 #include <vector>
 namespace mrsd
 {
@@ -22,7 +23,10 @@ namespace mrsd
 			 */
 			void createPlayer(Game& g);
 			//MY MODIFICATIONS
-			map<float, int> exlosion_time_mapping;
+			std::unordered_map<float, Prediction> prediction_time_mapping;
+			std::vector<Prediction> prediction_vector; //Should be improved to ordered set
+			void find_explosion_area(Game& g,float x);
+			int *my_dangerZone;
 		private:
 			Player* p;
 			float currentTime;
