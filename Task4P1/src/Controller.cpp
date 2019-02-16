@@ -91,28 +91,37 @@ namespace mrsd
 		for(int i=0;i<prediction_vector.size();i++)
 		{
 			//if(prediction_vector[i].t == g.getGameTime() + 5*my_time_step)
-			if(g.getGameTime() > prediction_vector[i].t - 10*my_time_step && g.getGameTime() < g.getGameTime() + 10*my_time_step)
+			if(g.getGameTime() > prediction_vector[i].t - 100*my_time_step && g.getGameTime() < g.getGameTime() + 50*my_time_step)
 				{
 					find_explosion_area(w, prediction_vector[i].x,my_explosion_size);
 				}
 		}
 
-		for(int i=0;i<w+1;i++)
-		{
-			std::cout<<my_dangerZone[i]<<",";
-		}
-		std::cout<<"\n";
+		// for(int i=0;i<w+1;i++)
+		// {
+		// 	std::cout<<my_dangerZone[i]<<",";
+		// }
+		// std::cout<<"\n";
 
 	}
 
 	int Controller::pickSafeSpot(const Game& g)
 	{
+
+		for(int i=0;i<g.getWidth() + 1;i++)
+		{
+			std::cout<<my_dangerZone[i]<<",";
+		}
+		std::cout<<"\n";
+
+		// std::cout<<g.getTimeStep();
+
 		int length = g.getWidth();
 		for(int i=0;i<length;i++)
 		{
 			if(my_dangerZone[i]==0)
 			{
-				p->x = my_dangerZone[i];
+				p->x = i;
 				break;
 			}
 		}
