@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iostream>
 #include <math.h>
+
 namespace mrsd
 {
 	void Controller::control(const mrsd::Game& g, float t)
@@ -30,6 +31,9 @@ namespace mrsd
 		determineSafeSpots(g);
 
 		pickSafeSpot(g);
+
+		// int ch;
+		// std::cin>>ch;
 		}
 
 	}
@@ -62,7 +66,10 @@ namespace mrsd
 	Prediction Controller::trackProjectile(const Projectile& p, const Game& g)
 	{
 		Prediction pred;
-		//pred.t = -2*p.vy/g.getGravity();
+		// pred.t = -2*p.vy/g.getGravity();
+		// pred.x = p.x + (p.vx*pred.t);
+		// pred.t = pred.t + g.getGameTime();
+
 
 		float t1 = (-1*p.y + pow(pow(p.vy,2) - (2*g.getGravity()*p.y),0.5))/g.getGravity();
 		if(t1>0)
@@ -72,12 +79,11 @@ namespace mrsd
 		}
 		else
 		{
-			pred.t= (-1*p.y + pow(pow(p.vy,2) + (2*g.getGravity()*p.y),0.5))/g.getGravity();
+			pred.t= (-1*p.y - pow(pow(p.vy,2) - (2*g.getGravity()*p.y),0.5))/g.getGravity();
 			pred.x = p.x + (p.vx*pred.t);
 			pred.t = pred.t + g.getGameTime();
 		}
 		
-		//p.predicted = 1;
 		return pred;
 	}
 
@@ -91,40 +97,53 @@ namespace mrsd
 		for(int i=0;i<prediction_vector.size();i++)
 		{
 			//if(prediction_vector[i].t == g.getGameTime() + 5*my_time_step)
-			if(g.getGameTime() > prediction_vector[i].t - 100*my_time_step && g.getGameTime() < g.getGameTime() + 50*my_time_step)
+			if(g.getGameTime() > prediction_vector[i].t - 100*my_time_step && g.getGameTime() < prediction_vector[i].t + 100*my_time_step)
 				{
 					find_explosion_area(w, prediction_vector[i].x,my_explosion_size);
 				}
 		}
 
-		// for(int i=0;i<w+1;i++)
-		// {
-		// 	std::cout<<my_dangerZone[i]<<",";
-		// }
-		// std::cout<<"\n";
+		for(int i=0;i<w+1;i++)
+		{
+			if(my_dangerZone[i] == 1)
+				std::cout<<i<<" , ";
+		}
+		std::cout<<"\n";
+
+		for(int i=0;i<prediction_vector.size();i++)
+		{
+			std::cout<<prediction_vector[i].x<<" , ";
+		}
+
 
 	}
 
+
 	int Controller::pickSafeSpot(const Game& g)
 	{
-
+		std::cout<<"In pick safe spot function";
 		for(int i=0;i<g.getWidth() + 1;i++)
 		{
 			std::cout<<my_dangerZone[i]<<",";
 		}
 		std::cout<<"\n";
 
+
 		// std::cout<<g.getTimeStep();
 
 		int length = g.getWidth();
-		for(int i=0;i<length;i++)
+		for(int i=5;i<length;i++)		//changed from 0 to 5
 		{
-			if(my_dangerZone[i]==0)
+			if(my_dangerZone[i]==0 && my_dangerZone[i-1]==0 && my_dangerZone[i+1]==0)
 			{
 				p->x = i;
 				break;
 			}
 		}
+
+		std::cout<<"Moving to safe location"<<"\t";
+		std::cout<<p->x;
+
 
 		return 0;
 	}

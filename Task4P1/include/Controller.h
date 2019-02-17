@@ -23,10 +23,11 @@ namespace mrsd
 			 */
 			void createPlayer(Game& g);
 			//MY MODIFICATIONS
-			std::unordered_map<float, Prediction> prediction_time_mapping;
+			//std::unordered_map<float, Prediction> prediction_time_mapping;
 			std::vector<Prediction> prediction_vector; //Should be improved to ordered set
 			void find_explosion_area(int w, float x,float explosionSize);
 			int *my_dangerZone;
+			//void print_details(const Game& g);
 		private:
 			Player* p;
 			float currentTime;

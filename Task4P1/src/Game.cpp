@@ -63,6 +63,7 @@ namespace mrsd
 			dangerZone[(int)std::ceil(p.x)] > 0)
 		{
 			p.dead = true;
+			std::cout<<"You are dead";
 			return false;
 		}
 		return true;
