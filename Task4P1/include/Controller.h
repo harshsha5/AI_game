@@ -27,7 +27,10 @@ namespace mrsd
 			std::vector<Prediction> prediction_vector; //Should be improved to ordered set
 			void find_explosion_area(int w, float x,float explosionSize);
 			int *my_dangerZone;
+			std::vector<int> counter{std::vector<int>(201,0)};
 			//void print_details(const Game& g);
+			std::vector<std::vector<int>> explosion_time_vector; 
+			std::vector<int> get_explosion_area(int w, float x,float explosionSize);
 		private:
 			Player* p;
 			float currentTime;
