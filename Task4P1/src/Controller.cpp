@@ -65,7 +65,9 @@ namespace mrsd
 		for(int i = std::floor(x - explosionSize);i <= std::ceil(x + explosionSize);++i)
 		{
 			if( i >= 0 && i <= w )
-				tempo.push_back(i);
+				{
+					tempo.push_back(i);
+				}
 		}
 
 		return tempo;
@@ -124,30 +126,30 @@ namespace mrsd
 
 		for(int i=0;i<prediction_vector.size();i++)
 		{	
-			if(g.getGameTime() > prediction_vector[i].t - 100*my_time_step)
+			if(g.getGameTime() > prediction_vector[i].t - 50*my_time_step)
 			{
 					temp = get_explosion_area(w, prediction_vector[i].x, my_explosion_size);
 					for(int j=0;j<temp.size();j++)
 					{
-						if(counter[j]==0)
+						if(counter[temp[j]]==0)
 							{
-								counter[j] = std::ceil(prediction_vector[i].t - present_time + 50*my_time_step);
+								counter[temp[j]] = std::ceil(100*(prediction_vector[i].t - present_time + 50*my_time_step));
 							}
 
 						else
 							{
-								new_temp_time = std::ceil(prediction_vector[i].t - present_time + 50*my_time_step);
-								counter[j] = std::max(counter[j],new_temp_time);
+								new_temp_time = std::ceil(100*(prediction_vector[i].t - present_time + 50*my_time_step));
+								counter[temp[j]] = std::max(counter[j],new_temp_time);
 							}
 
 					}
 			}
 		}
 
-		for(int i=0;i<counter.size();i++)
-		{
-			std::cout<<counter[i]<<" , ";
-		}
+		// for(int i=0;i<counter.size();i++)
+		// {
+		// 	std::cout<<counter[i]<<" , ";
+		// }
 
 
 		my_dangerZone = new int[w+1];
@@ -156,7 +158,7 @@ namespace mrsd
 		for(int j=0;j<counter.size();j++)
 		{
 			if(counter[j]!=0)
-				my_dangerZone++;
+				my_dangerZone[j]++;
 		}
 
 		// for(int i=0;i<prediction_vector.size();i++)
@@ -186,13 +188,21 @@ namespace mrsd
 
 	int Controller::pickSafeSpot(const Game& g)
 	{
-		// std::cout<<"\n"<<"In pick safe spot function";
-		// for(int i=0;i<g.getWidth() + 1;i++)
-		// {
-		// 	std::cout<<my_dangerZone[i]<<",";
-		// }
+		std::cout<<"\n"<<"In pick safe spot function DANGER_ZONE"<<"\n"<<"\n";
+		for(int i=0;i<g.getWidth() + 1;i++)
+		{
+			std::cout<<my_dangerZone[i]<<",";
+		}
 		std::cout<<"\n"<<"\n";
 
+		std::cout<<"\n"<<"COUNTER"<<"\n"<<"\n";
+		for(int i=0;i<counter.size();i++)
+		{
+			std::cout<<counter[i]<<",";
+		}
+		std::cout<<"\n"<<"\n";
+
+		float time_step= g.getTimeStep();
 
 		// std::cout<<g.getTimeStep();
 
@@ -210,11 +220,16 @@ namespace mrsd
 		std::cout<<p->x << "\n";
 
 
-		//Decrementing counter by 1
+		//Decrementing counter by 100*time_step
 		for(int k=0; k<counter.size();k++)
 		{
-			if(counter[k]!=0)
-			counter[k]--;
+			if(counter[k]>0)
+				counter[k] = counter[k] - int((100*time_step));
+			else
+			{
+				counter[k] = 0;
+			}
+			
 		}
 
 		return 0;
