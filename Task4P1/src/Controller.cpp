@@ -44,8 +44,8 @@ namespace mrsd
 		pickSafeSpot(g);
 
 		// explosion_time_vector = vec; 
-		int c;
-		c = std::getchar();
+		// int c;
+		// c = std::getchar();
 		}
 
 	}
@@ -60,13 +60,15 @@ namespace mrsd
 	// 	}
 	// }
 
-	std::vector<int> get_explosion_area(int w, float x,float explosionSize)
+	std::vector<int> Controller::get_explosion_area(int w, float x,float explosionSize)
 	{	std::vector<int> tempo;
 		for(int i = std::floor(x - explosionSize);i <= std::ceil(x + explosionSize);++i)
 		{
 			if( i >= 0 && i <= w )
 				tempo.push_back(i);
 		}
+
+		return tempo;
 	}
 
 	void Controller::createPlayer(Game& g)
@@ -105,9 +107,9 @@ namespace mrsd
 			pred.t = pred.t + g.getGameTime();
 		}
 
-		std::cout<<"Predicted blast location "<<pred.x<<"\n"<<"Predicted time of blast "<<pred.t<<"\n"<<"Velocity_x of projectile"<<p.vx<<"\n";
-		std::cout<<"Velocity_y of projectile "<<p.vy<<"\n"<<"Present game time " << g.getGameTime()<<"\n";
-		std::cout<<"Y location " << p.y<<"\n"<<"X location "<<p.x<<"\n";
+		// std::cout<<"Predicted blast location "<<pred.x<<"\n"<<"Predicted time of blast "<<pred.t<<"\n"<<"Velocity_x of projectile"<<p.vx<<"\n";
+		// std::cout<<"Velocity_y of projectile "<<p.vy<<"\n"<<"Present game time " << g.getGameTime()<<"\n";
+		// std::cout<<"Y location " << p.y<<"\n"<<"X location "<<p.x<<"\n";
 		return pred;
 	}
 
@@ -116,15 +118,37 @@ namespace mrsd
 		int w = g.getWidth();
 		float my_time_step = g.getTimeStep();
 		float my_explosion_size = g.explosionSize;
+		float present_time = g.getGameTime();
+		int new_temp_time;
 		std::vector<int> temp;
 
 		for(int i=0;i<prediction_vector.size();i++)
 		{	
 			if(g.getGameTime() > prediction_vector[i].t - 100*my_time_step)
-				{
-					temp = get_explosion_area(w, prediction_vector[i].x,my_explosion_size);
-				}
+			{
+					temp = get_explosion_area(w, prediction_vector[i].x, my_explosion_size);
+					for(int j=0;j<temp.size();j++)
+					{
+						if(counter[j]==0)
+							{
+								counter[j] = std::ceil(prediction_vector[i].t - present_time + 50*my_time_step);
+							}
+
+						else
+							{
+								new_temp_time = std::ceil(prediction_vector[i].t - present_time + 50*my_time_step);
+								counter[j] = std::max(counter[j],new_temp_time);
+							}
+
+					}
+			}
 		}
+
+		for(int i=0;i<counter.size();i++)
+		{
+			std::cout<<counter[i]<<" , ";
+		}
+
 
 		my_dangerZone = new int[w+1];
 		for(int i = 0; i < w+1; ++i) my_dangerZone[i] = 0;
@@ -144,17 +168,17 @@ namespace mrsd
 		// 		}
 		// }
 
-		for(int i=0;i<w+1;i++)
-		{
-			if(my_dangerZone[i] == 1)
-				std::cout<<i<<" , ";
-		}
-		std::cout<<"\n"<<"\n";
+		// for(int i=0;i<w+1;i++)
+		// {
+		// 	if(my_dangerZone[i] == 1)
+		// 		std::cout<<i<<" , ";
+		// }
+		// std::cout<<"\n"<<"\n";
 
-		for(int i=0;i<prediction_vector.size();i++)
-		{
-			std::cout<<prediction_vector[i].x<<" , ";
-		}
+		// for(int i=0;i<prediction_vector.size();i++)
+		// {
+		// 	std::cout<<prediction_vector[i].x<<" , ";
+		// }
 
 
 	}
@@ -162,11 +186,11 @@ namespace mrsd
 
 	int Controller::pickSafeSpot(const Game& g)
 	{
-		std::cout<<"\n"<<"In pick safe spot function";
-		for(int i=0;i<g.getWidth() + 1;i++)
-		{
-			std::cout<<my_dangerZone[i]<<",";
-		}
+		// std::cout<<"\n"<<"In pick safe spot function";
+		// for(int i=0;i<g.getWidth() + 1;i++)
+		// {
+		// 	std::cout<<my_dangerZone[i]<<",";
+		// }
 		std::cout<<"\n"<<"\n";
 
 
@@ -185,6 +209,13 @@ namespace mrsd
 		std::cout<<"Moving to safe location"<<"\t";
 		std::cout<<p->x << "\n";
 
+
+		//Decrementing counter by 1
+		for(int k=0; k<counter.size();k++)
+		{
+			if(counter[k]!=0)
+			counter[k]--;
+		}
 
 		return 0;
 	}

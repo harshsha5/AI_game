@@ -28,7 +28,7 @@ int main(void)
 	glfe.enemyScale = 3.f;
 
 	//Setup Scenario
-	setupScenarioEasy(g);
+	setupScenarioMedium(g);
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 	std::chrono::milliseconds wait(1000/60);
 	while(!glfe.shouldClose(g))
