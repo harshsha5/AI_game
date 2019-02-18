@@ -1,6 +1,7 @@
 # AI_game
 
 Setup
+
 This software can be run on any OS but I will only detail installation for Ubuntu 14.04. Install cmake, build essentials, X11 libraries, and opengl using the commands sudo apt-get install cmake build-essential xorg-dev libgl1-mesa-dev mesa-utils. 
 In order to build the program it requires C++11 compliant compiler, if you are using Ubuntu 14.04 you should have at least gcc 4.84 but you can check using gcc -v. 
 Then, within the build directory in /Task4P1 , run “make”. Your executable should now be built and you can run it with ./missiledefense.
