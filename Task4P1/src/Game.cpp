@@ -63,7 +63,6 @@ namespace mrsd
 			dangerZone[(int)std::ceil(p.x)] > 0)
 		{
 			p.dead = true;
-			std::cout<<"YOU ARE DEAD qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"<<"\n"<<"\n";
 			return false;
 		}
 		return true;
@@ -95,7 +94,6 @@ namespace mrsd
 		p.vy += t * gravity;
 		if( p.y <= 0 )
 		{
-			std::cout<<"\n"<<"Explosion occuring at "<<p.x<<"\n"<<"\n";
 			explode(p.x);
 			return false;
 		}

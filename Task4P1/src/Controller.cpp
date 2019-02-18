@@ -8,34 +8,21 @@ namespace mrsd
 	void Controller::control(const mrsd::Game& g, float t)
 	{	if(p!=0)
 		{
-		//g->tick();
-		//Player *player_pointer;
+			
 		Prediction pred;
-		//Projectile p;
 		float present_time = g.getGameTime();
 		std::list<Explosion> explosion_list;
 		std::list<Projectile> projectile_list;
-		//map<float, Projectile> projectile_time_mapping;
 		projectile_list = g.getProjectiles(); 
 		explosion_list = g.getExplosions();
 		prediction_vector.clear();
-		// if(g.getGameTime == g.getTimeStep)
-		// {
-		// 	std::vector<std::vector<int>> vec(1, std::vector<int> (g.getWidth(), 0));
-		// }
-		// else
-		// {
-		// 	std::vector<std::vector<int>> vec = explosion_time_vector; 
-		// }
-		
-
 
 		for(std::list<Projectile>::iterator it = projectile_list.begin();it != projectile_list.end();it++)
 		{
 	
 			pred = trackProjectile(*it,g);
 			//std::cout<<pred.t<<","<<pred.x<<"\n";
-			prediction_vector.push_back(pred);		//PART OF MY INITIAL IMPLEMENTATION	
+			prediction_vector.push_back(pred);		
 
 		}
 
@@ -43,22 +30,11 @@ namespace mrsd
 
 		pickSafeSpot(g);
 
-		// explosion_time_vector = vec; 
 		// int c;
 		// c = std::getchar();
 		}
 
 	}
-
-	// void Controller::find_explosion_area(int w, float x,float explosionSize)
-	// {
-	// 	//int w = g.getWidth();
-	// 	for(int i = std::floor(x - explosionSize -2);i <= std::ceil(x + explosionSize + 2);++i)
-	// 	{
-	// 		if( i >= 0 && i <= w )
-	// 			my_dangerZone[i]++;
-	// 	}
-	// }
 
 	std::vector<int> Controller::get_explosion_area(int w, float x,float explosionSize)
 	{	std::vector<int> tempo;
@@ -91,10 +67,6 @@ namespace mrsd
 	Prediction Controller::trackProjectile(const Projectile& p, const Game& g)
 	{
 		Prediction pred;
-		// pred.t = -2*p.vy/g.getGravity();
-		// pred.x = p.x + (p.vx*pred.t);
-		// pred.t = pred.t + g.getGameTime();
-
 
 		float t1 = (-1*p.vy + pow(pow(p.vy,2) - (2*g.getGravity()*p.y),0.5))/g.getGravity();
 		if(t1>0)
@@ -146,11 +118,6 @@ namespace mrsd
 			}
 		}
 
-		// for(int i=0;i<counter.size();i++)
-		// {
-		// 	std::cout<<counter[i]<<" , ";
-		// }
-
 
 		my_dangerZone = new int[w+1];
 		for(int i = 0; i < w+1; ++i) my_dangerZone[i] = 0;
@@ -161,65 +128,75 @@ namespace mrsd
 				my_dangerZone[j]++;
 		}
 
-		// for(int i=0;i<prediction_vector.size();i++)
-		// {
-		// 	//if(prediction_vector[i].t == g.getGameTime() + 5*my_time_step)
-		// 	if(g.getGameTime() > prediction_vector[i].t - 100*my_time_step && g.getGameTime() < prediction_vector[i].t + 100*my_time_step)
-		// 		{
-		// 			find_explosion_area(w, prediction_vector[i].x,my_explosion_size);
-		// 		}
-		// }
-
-		// for(int i=0;i<w+1;i++)
-		// {
-		// 	if(my_dangerZone[i] == 1)
-		// 		std::cout<<i<<" , ";
-		// }
-		// std::cout<<"\n"<<"\n";
-
-		// for(int i=0;i<prediction_vector.size();i++)
-		// {
-		// 	std::cout<<prediction_vector[i].x<<" , ";
-		// }
-
 
 	}
 
 
 	int Controller::pickSafeSpot(const Game& g)
 	{
-		std::cout<<"\n"<<"In pick safe spot function DANGER_ZONE"<<"\n"<<"\n";
-		for(int i=0;i<g.getWidth() + 1;i++)
-		{
-			std::cout<<my_dangerZone[i]<<",";
-		}
-		std::cout<<"\n"<<"\n";
+		// std::cout<<"\n"<<"In pick safe spot function DANGER_ZONE"<<"\n"<<"\n";
+		// for(int i=0;i<g.getWidth() + 1;i++)
+		// {
+		// 	std::cout<<my_dangerZone[i]<<",";
+		// }
+		// std::cout<<"\n"<<"\n";
 
-		std::cout<<"\n"<<"COUNTER"<<"\n"<<"\n";
-		for(int i=0;i<counter.size();i++)
-		{
-			std::cout<<counter[i]<<",";
-		}
-		std::cout<<"\n"<<"\n";
+		// std::cout<<"\n"<<"COUNTER"<<"\n"<<"\n";
+		// for(int i=0;i<counter.size();i++)
+		// {
+		// 	std::cout<<counter[i]<<",";
+		// }
+		// std::cout<<"\n"<<"\n";
 
 		float time_step= g.getTimeStep();
 
 		// std::cout<<g.getTimeStep();
 
-		int length = g.getWidth();
-		for(int i=5;i<length;i++)		//changed from 0 to 5
-		{
-			if(my_dangerZone[i]==0)
+
+		//MOVING THE PLAYER
+		if(my_dangerZone[int(p->x)]==0)
 			{
-				p->x = i;
-				break;
+				
 			}
+		else
+		{
+			int closest_left_spot;
+			int closest_right_spot;
+			int point_to_move;
+			for(int i = int(p->x);i>=0;i--)
+				{
+					if(my_dangerZone[i]==0)
+					{
+						closest_left_spot = i;
+						break;
+					}
+				}
+
+			for(int i = int(p->x);i>=g.getWidth();i++)
+				{
+					if(my_dangerZone[i]==0)
+					{
+						closest_right_spot = i;
+						break;
+					}
+				}
+
+			point_to_move = std::min(std::abs(p->x - closest_left_spot),std::abs(p->x - closest_right_spot));
+
+			if(std::abs(p->x - closest_left_spot) < std::abs(p->x - closest_right_spot))
+			{
+				p->x = p->x - g.playerSpeed;
+			}
+
+			else
+			{
+				p->x = p->x + g.playerSpeed;
+			}
+			
+
+
 		}
-
-		std::cout<<"Moving to safe location"<<"\t";
-		std::cout<<p->x << "\n";
-
-
+		
 		//Decrementing counter by 100*time_step
 		for(int k=0; k<counter.size();k++)
 		{
